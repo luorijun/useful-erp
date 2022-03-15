@@ -1,0 +1,59 @@
+@startuml
+
+''''''''''''''''''''
+'' 出入库
+''''''''''''''''''''
+
+interface Auditable {
+    createdAt: Datetime
+    createdBy: Account
+}
+
+class Production implements Auditable {
+    name: String
+    price: Double
+    cost: Double
+}
+
+class Warehouse implements Auditable {
+    name: String
+}
+
+class Bound implements Auditable  {
+    production: Production
+    warehouse: Warehouse
+    count: Integer
+    countBalance: Integer
+}
+
+class InboundRecord extends Bound {
+}
+
+class OutBoundRecord extends Bound {
+}
+
+Bound --* Warehouse
+Bound --* Production
+
+''''''''''''''''''''
+'' 权限
+''''''''''''''''''''
+
+class Account {
+    name: String
+    username: String
+    password: String
+}
+
+class Role {
+    name: String
+}
+
+class Authority {
+    name: String
+}
+
+Account --* Role
+Role --* Authority
+
+@enduml
