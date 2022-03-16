@@ -13,13 +13,13 @@ void main() {
     databaseFactory = databaseFactoryFfi;
   }
 
+  // 运行程序
+  runApp(const Application());
+
   // 初始化窗口
   doWhenWindowReady(() {
     appWindow.maximize();
   });
-
-  // 运行程序
-  runApp(const Application());
 }
 
 // 配置应用
