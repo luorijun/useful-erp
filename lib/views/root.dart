@@ -204,7 +204,7 @@ class Navigation extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: const [
-                Text("version: 0.1.0"),
+                Text("v0.2.0"),
               ],
             ),
           ),
