@@ -142,15 +142,33 @@ class Navigation extends StatelessWidget {
                   NavItem(
                     icon: Icons.shopping_cart,
                     label: "销售出库",
+                    selected: router == null ? false : router.current?.name == 'outbound-edit-batch',
+                    onSelect: () {
+                      if (navigator == null || router?.current?.name == 'outbound-edit-batch') return;
+                      navigator.pushNamed('outbound-edit-batch');
+                    },
+                  ),
+                  NavItem(
+                    icon: Icons.outbox,
+                    label: "出库记录",
                     selected: router == null ? false : router.current?.name == 'outbound',
                     onSelect: () {
                       if (navigator == null || router?.current?.name == 'outbound') return;
                       navigator.pushNamed('outbound');
                     },
                   ),
+                  // NavItem(
+                  //   icon: Icons.edit_note,
+                  //   label: "登记入库",
+                  //   selected: router == null ? false : router.current?.name == 'inbound-edit-batch',
+                  //   onSelect: () {
+                  //     if (navigator == null || router?.current?.name == 'inbound-edit-batch') return;
+                  //     navigator.pushNamed('inbound-edit-batch');
+                  //   },
+                  // ),
                   NavItem(
                     icon: Icons.move_to_inbox,
-                    label: "登记入库",
+                    label: "入库记录",
                     selected: router == null ? false : router.current?.name == 'inbound',
                     onSelect: () {
                       if (navigator == null || router?.current?.name == 'inbound') return;
