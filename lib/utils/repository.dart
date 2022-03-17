@@ -36,7 +36,7 @@ abstract class Repository {
   Future<List<Map<String, dynamic>>> findAll({
     int? current,
     int? size,
-    Map<String, dynamic>? conditions,
+    Map<String, Condition>? conditions,
     List<String>? orders,
   }) async {
     final db = await connection.db;
@@ -45,8 +45,28 @@ abstract class Repository {
     String? where;
     List<dynamic>? whereArgs;
     if (conditions != null && conditions.isNotEmpty) {
-      where = conditions.keys.map((key) => '$key like ?').join(' and ');
-      whereArgs = conditions.values.map((value) => '%$value%').toList(growable: false);
+      where = conditions.entries.map((entry) {
+        final key = entry.key;
+        final value = entry.value;
+        switch (value.operator) {
+          case Operator.equal:
+            return '$key = ?';
+          case Operator.like:
+            return '$key like ?';
+          case Operator.notEqual:
+            return '$key != ?';
+        }
+      }).join(' and ');
+
+      whereArgs = conditions.values.map((value) {
+        switch (value.operator) {
+          case Operator.equal:
+          case Operator.notEqual:
+            return value.keyword;
+          case Operator.like:
+            return '%${value.keyword}%';
+        }
+      }).toList(growable: false);
     }
 
     // 按字段排序
@@ -144,6 +164,22 @@ abstract class Repository {
   }
 }
 
+class Condition {
+  final String keyword;
+  final Operator operator;
+
+  Condition(
+    this.keyword, [
+    this.operator = Operator.equal,
+  ]);
+}
+
+enum Operator {
+  equal,
+  like,
+  notEqual,
+}
+
 class Connection {
   Connection._();
 
@@ -166,8 +202,7 @@ class Connection {
           db.setVersion(version);
         },
         onUpgrade: (db, oldVersion, newVersion) {
-          db.execute(drop);
-          db.execute(create);
+          db.execute(update);
           db.setVersion(newVersion);
         },
       );
@@ -176,7 +211,7 @@ class Connection {
   }
 }
 
-const version = 6;
+const version = 7;
 
 const drop = '''
 drop table if exists production;
@@ -192,8 +227,10 @@ create table production
 (
     id       integer primary key autoincrement,
     name     text    not null,
+    spec     text    null,
     price    float   not null default 0,
     cost     float   not null default 0,
+    unit     text    null,
     createBy integer null,
     createAt text    null
 );
@@ -243,4 +280,12 @@ create table authority
     createBy integer null,
     createAt text    null
 );
+''';
+
+const update = '''
+alter table production
+    add spec text default null;
+
+alter table production
+    add unit text default null;
 ''';

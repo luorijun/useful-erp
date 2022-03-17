@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:useful_erp/entities/bound.dart';
+import 'package:useful_erp/utils/repository.dart';
 import 'package:useful_erp/views/inbound/inbound_create.dart';
 import 'package:useful_erp/views/inbound/inbound_update.dart';
 import 'package:useful_erp/widgets/table.dart';
@@ -19,7 +20,7 @@ class InboundView extends StatelessWidget {
       current: current,
       size: size,
       conditions: {
-        'type': BoundType.RECORD_IN.name,
+        'type': Condition(BoundType.RECORD_IN.name),
       },
     ),
     onCreate: (context) async => showDialog(

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:useful_erp/entities/bound.dart';
 import 'package:useful_erp/entities/production.dart';
 import 'package:useful_erp/entities/warehouse.dart';
+import 'package:useful_erp/utils/repository.dart';
 import 'package:useful_erp/views/outbound/outbound_editor.dart';
 import 'package:useful_erp/views/outbound/outbound_form.dart';
 import 'package:useful_erp/views/outbound/outbound_order_editor.dart';
@@ -11,8 +12,8 @@ import 'package:useful_erp/widgets/table.dart';
 import 'package:useful_erp/widgets/templates/table_template.dart';
 import 'package:useful_erp/widgets/templates/table_view_template.dart';
 
-class Outbound extends StatelessWidget {
-  Outbound({Key? key}) : super(key: key);
+class OutboundView extends StatelessWidget {
+  OutboundView({Key? key}) : super(key: key);
 
   final _repository = BoundRepository();
   final _productionRepository = ProductionRepository();
@@ -27,7 +28,7 @@ class Outbound extends StatelessWidget {
         current: current,
         size: size,
         conditions: {
-          'type': BoundType.SALE_OUT.name,
+          'type': Condition(BoundType.SALE_OUT.name),
         },
       );
       return Future.wait(result.map((bound) async {
