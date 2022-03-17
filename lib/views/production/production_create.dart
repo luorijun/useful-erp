@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:useful_erp/entities/production.dart';
 import 'package:useful_erp/utils/input.dart';
-import 'package:useful_erp/views/production/production.dart';
+import 'package:useful_erp/views/production/production_view.dart';
 
 class ProductionCreate extends StatelessWidget {
   ProductionCreate({Key? key, required this.state}) : super(key: key);

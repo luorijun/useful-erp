@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:useful_erp/utils/events.dart';
 import 'package:useful_erp/views/inbound/Inbound.dart';
 import 'package:useful_erp/views/outbound/outbound.dart';
-import 'package:useful_erp/views/production/production.dart';
+import 'package:useful_erp/views/production/production_view.dart';
 import 'package:useful_erp/views/warehouse/warehouse.dart';
 
 class Root extends StatefulWidget {
