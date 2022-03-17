@@ -146,9 +146,9 @@ class ProductionView extends StatelessWidget {
                   final type = BoundType.values.firstWhere((item) => item.name == bound['type']);
                   switch (type) {
                     case BoundType.RECORD_IN:
-                      return int.parse(bound['count']);
+                      return bound['count'];
                     case BoundType.SALE_OUT:
-                      return -int.parse(bound['count']);
+                      return -bound['count'];
                   }
                 }).reduce((value, count) {
                   return value + count;
