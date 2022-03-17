@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:useful_erp/entities/production.dart';
+import 'package:useful_erp/utils/repository.dart';
 import 'package:useful_erp/widgets/dialogs/content_dialog.dart';
 import 'package:useful_erp/widgets/table.dart';
 import 'package:useful_erp/widgets/templates/table_template.dart';
@@ -21,9 +22,9 @@ class ProductionPicker extends StatelessWidget {
   late final _controller = TableTemplateController(
     onCount: (_) async => _repository.count(),
     onRefresh: (_, current, size) async {
-      Map<String, dynamic> conditions = {};
+      Map<String, Condition> conditions = {};
       if (_name.text.isNotEmpty) {
-        conditions['name'] = _name.text;
+        conditions['name'] = Condition(_name.text, Operator.like);
       }
       return _repository.findAll(
         current: current,

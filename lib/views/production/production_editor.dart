@@ -4,8 +4,8 @@ import 'package:useful_erp/widgets/dialogs/content_dialog.dart';
 
 import 'production.dart';
 
-editProduction(BuildContext context, [Production? production]) {
-  return showDialog(
+Future<Production?> editProduction(BuildContext context, [Production? production]) async {
+  return await showDialog<Production>(
     context: context,
     builder: (context) => ProductionEditor(value: production),
   );
@@ -26,8 +26,14 @@ class ProductionEditor extends StatelessWidget {
     return ContentDialog(
       title: const Text("修改商品"),
       content: ProductionForm(state: _state),
-      onCancel: () {},
-      onConfirm: () => _state.production,
+      autoPop: false,
+      onCancel: () {
+        Navigator.pop(context);
+      },
+      onConfirm: () {
+        if (_state.production == null) return;
+        Navigator.pop(context, _state.production);
+      },
     );
   }
 }

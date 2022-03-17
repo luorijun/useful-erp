@@ -8,8 +8,10 @@ class ProductionFormState extends ChangeNotifier {
   }
 
   late final Production _production;
+  final GlobalKey<FormState> _form = GlobalKey();
 
-  Production get production {
+  Production? get production {
+    if (!_form.currentState!.validate()) return null;
     return Production(
       id: _production.id,
       name: _production.name,
@@ -45,45 +47,67 @@ class ProductionForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        TextFormField(
-          controller: _name,
-          decoration: const InputDecoration(labelText: "名称"),
-          onChanged: (_) => state.production.name = _name.text,
-        ),
-        TextFormField(
-          controller: _spec,
-          decoration: const InputDecoration(labelText: "规格"),
-          onChanged: (_) => state.production.spec = _name.text,
-        ),
-        TextFormField(
-          controller: _cost,
-          inputFormatters: [numberFormatter],
-          keyboardType: TextInputType.number,
-          decoration: const InputDecoration(labelText: "成本"),
-          onChanged: (_) {
-            if (_cost.text.isEmpty) return;
-            state.production.cost = double.parse(_cost.text);
-          },
-        ),
-        TextFormField(
-          controller: _price,
-          inputFormatters: [numberFormatter],
-          keyboardType: TextInputType.number,
-          decoration: const InputDecoration(labelText: "售价"),
-          onChanged: (_) {
-            if (_price.text.isEmpty) return;
-            state.production.price = double.parse(_price.text);
-          },
-        ),
-        TextFormField(
-          controller: _unit,
-          decoration: const InputDecoration(labelText: "单位"),
-          onChanged: (_) => state.production.name = _name.text,
-        ),
-      ],
+    return Form(
+      key: state._form,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextFormField(
+            controller: _name,
+            decoration: const InputDecoration(labelText: "名称"),
+            onChanged: (_) => state._production.name = _name.text,
+            validator: (value) {
+              if (value?.trim().isEmpty ?? true) {
+                return "名称不能为空";
+              }
+
+              return null;
+            },
+          ),
+          TextFormField(
+            controller: _spec,
+            decoration: const InputDecoration(labelText: "规格"),
+            onChanged: (_) => state._production.spec = _spec.text,
+          ),
+          TextFormField(
+            controller: _cost,
+            inputFormatters: [numberFormatter],
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(labelText: "成本"),
+            onChanged: (_) {
+              if (_cost.text.isEmpty) return;
+              state._production.cost = double.parse(_cost.text);
+            },
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) return "成本不能为空";
+              final result = double.tryParse(value);
+              if (result == null) return '请输入正确的数字格式';
+              return null;
+            },
+          ),
+          TextFormField(
+            controller: _price,
+            inputFormatters: [numberFormatter],
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(labelText: "售价"),
+            onChanged: (_) {
+              if (_price.text.isEmpty) return;
+              state._production.price = double.parse(_price.text);
+            },
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) return "售价不能为空";
+              final result = double.tryParse(value);
+              if (result == null) return '请输入正确的数字格式';
+              return null;
+            },
+          ),
+          TextFormField(
+            controller: _unit,
+            decoration: const InputDecoration(labelText: "单位"),
+            onChanged: (_) => state._production.unit = _unit.text,
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:useful_erp/entities/warehouse.dart';
+import 'package:useful_erp/utils/repository.dart';
 import 'package:useful_erp/views/warehouse/warehouse_create.dart';
 import 'package:useful_erp/views/warehouse/warehouse_update.dart';
 import 'package:useful_erp/widgets/table.dart';
@@ -18,9 +19,9 @@ class WarehouseView extends StatelessWidget {
     onCount: (context) async => _repository.count(),
     onRefresh: (context, current, size) async {
       // 构造查询条件
-      final Map<String, dynamic> conditions = {};
+      final Map<String, Condition> conditions = {};
       if (_name.text.isNotEmpty) {
-        conditions['name'] = _name.text;
+        conditions['name'] = Condition(_name.text, Operator.like);
       }
       // 执行查询
       return _repository.findAll(

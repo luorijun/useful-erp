@@ -12,10 +12,15 @@ class Production {
     this.id,
     this.name,
     this.spec,
-    this.price,
-    this.cost,
+    this.price = 0,
+    this.cost = 0,
     this.unit,
     this.createAt,
     this.createBy,
   });
+
+  @override
+  String toString() {
+    return 'Production{id: $id, name: $name, spec: $spec, price: $price, cost: $cost, unit: $unit, createAt: $createAt, createBy: $createBy}';
+  }
 }
