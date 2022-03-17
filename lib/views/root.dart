@@ -1,45 +1,24 @@
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
-import 'package:useful_erp/utils/events.dart';
-import 'package:useful_erp/views/inbound/Inbound.dart';
-import 'package:useful_erp/views/outbound/outbound.dart';
-import 'package:useful_erp/views/production/production_view.dart';
-import 'package:useful_erp/views/warehouse/warehouse.dart';
+import 'package:provider/provider.dart';
+import 'package:useful_erp/router.dart';
 
-class Root extends StatefulWidget {
+class Root extends StatelessWidget {
   const Root({Key? key}) : super(key: key);
-
-  @override
-  State<Root> createState() => _RootState();
-}
-
-class _RootState extends State<Root> {
-  Widget _page = Container();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          Row(
-            children: [
-              // 导航
-              Navigation(onSelect: (page) {
-                setState(() => _page = page);
-              }),
-              // 内容
-              Expanded(
-                child: Container(
-                  child: _page,
-                ),
-              ),
-            ],
-          ),
+      body: Stack(children: [
+        // 页面
+        Row(children: const [
+          Navigation(),
+          Expanded(child: RouterNode('root')),
+        ]),
 
-          // 窗口控制栏
-          const WindowTitleBar(),
-        ],
-      ),
+        // 标题栏
+        const WindowTitleBar(),
+      ]),
     );
   }
 }
@@ -138,20 +117,8 @@ class WindowButton extends StatelessWidget {
 // region 导航栏
 // ==============================
 
-class Navigation extends StatefulWidget {
-  const Navigation({
-    Key? key,
-    required this.onSelect,
-  }) : super(key: key);
-
-  final ActionEvent<Widget> onSelect;
-
-  @override
-  State<Navigation> createState() => _NavigationState();
-}
-
-class _NavigationState extends State<Navigation> {
-  var _selected = 'home';
+class Navigation extends StatelessWidget {
+  const Navigation({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -159,60 +126,58 @@ class _NavigationState extends State<Navigation> {
 
     return Container(
       width: 256,
+      padding: const EdgeInsets.only(top: 16),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           // 导航菜单项
           FocusTraversalGroup(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                NavItem(
-                  icon: Icons.shopping_cart,
-                  label: "销售出库",
-                  selected: _selected == 'consume',
-                  onSelect: () {
-                    widget.onSelect(Outbound());
-                    setState(() {
-                      _selected = 'consume';
-                    });
-                  },
-                ),
-                NavItem(
-                  icon: Icons.move_to_inbox,
-                  label: "登记入库",
-                  selected: _selected == 'inbound',
-                  onSelect: () {
-                    widget.onSelect(InboundView());
-                    setState(() {
-                      _selected = 'inbound';
-                    });
-                  },
-                ),
-                NavItem(
-                  icon: Icons.widgets,
-                  label: "商品管理",
-                  selected: _selected == 'production',
-                  onSelect: () {
-                    widget.onSelect(ProductionView());
-                    setState(() {
-                      _selected = 'production';
-                    });
-                  },
-                ),
-                NavItem(
-                  icon: Icons.warehouse,
-                  label: "仓库管理",
-                  selected: _selected == 'warehouse',
-                  onSelect: () {
-                    widget.onSelect(WarehouseView());
-                    setState(() {
-                      _selected = 'warehouse';
-                    });
-                  },
-                ),
-              ],
-            ),
+            child: Builder(builder: (context) {
+              final router = context.watch<RouterState>().child;
+              final navigator = router?.key.currentState!;
+
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  NavItem(
+                    icon: Icons.shopping_cart,
+                    label: "销售出库",
+                    selected: router == null ? false : router.current?.name == 'outbound',
+                    onSelect: () {
+                      if (navigator == null || router?.current?.name == 'outbound') return;
+                      navigator.pushNamed('outbound');
+                    },
+                  ),
+                  NavItem(
+                    icon: Icons.move_to_inbox,
+                    label: "登记入库",
+                    selected: router == null ? false : router.current?.name == 'inbound',
+                    onSelect: () {
+                      if (navigator == null || router?.current?.name == 'inbound') return;
+                      navigator.pushNamed('inbound');
+                    },
+                  ),
+                  NavItem(
+                    icon: Icons.widgets,
+                    label: "商品管理",
+                    selected: router == null ? false : router.current?.name == 'production',
+                    onSelect: () {
+                      if (navigator == null || router?.current?.name == 'production') return;
+                      navigator.pushNamed('production');
+                    },
+                  ),
+                  NavItem(
+                    icon: Icons.warehouse,
+                    label: "仓库管理",
+                    selected: router == null ? false : router.current?.name == 'warehouse',
+                    onSelect: () {
+                      if (navigator == null || router?.current?.name == 'warehouse') return;
+                      navigator.pushNamed('warehouse');
+                    },
+                  ),
+                ],
+              );
+            }),
           ),
 
           // 应用信息
@@ -256,19 +221,28 @@ class NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8).copyWith(bottom: 0),
-      child: InkWell(
-        child: Container(
-          padding: const EdgeInsets.all(8),
-          alignment: Alignment.center,
-          child: Row(children: [
-            Icon(icon),
-            const SizedBox(width: 8),
-            Text(label),
-          ]),
+    final theme = Theme.of(context);
+
+    return Container(
+      width: double.maxFinite,
+      height: 48,
+      margin: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+      child: TextButton.icon(
+        icon: Icon(
+          icon,
+          color: selected ? Colors.white : Colors.black87,
         ),
-        onTap: () => onSelect(),
+        label: Text(
+          label,
+          style: TextStyle(
+            color: selected ? Colors.white : Colors.black87,
+          ),
+        ),
+        onPressed: () => onSelect(),
+        style: TextButton.styleFrom(
+          alignment: Alignment.centerLeft,
+          backgroundColor: selected ? theme.primaryColor : Colors.transparent,
+        ),
       ),
     );
   }

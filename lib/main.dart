@@ -4,7 +4,12 @@ import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:useful_erp/router.dart';
+import 'package:useful_erp/views/inbound/Inbound.dart';
+import 'package:useful_erp/views/outbound/outbound.dart';
+import 'package:useful_erp/views/production/production_view.dart';
 import 'package:useful_erp/views/root.dart';
+import 'package:useful_erp/views/warehouse/warehouse.dart';
 
 void main() {
   // 初始化数据库
@@ -28,8 +33,18 @@ class Application extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Root(),
+    return MaterialApp(
+      home: RouterRoot(
+        child: const RouterNode('0'),
+        routes: [
+          RouteItem(name: 'root', widget: (_) => const Root(), children: [
+            RouteItem(name: 'outbound', widget: (_) => OutboundView()),
+            RouteItem(name: 'inbound', widget: (_) => InboundView()),
+            RouteItem(name: 'production', widget: (_) => ProductionView()),
+            RouteItem(name: 'warehouse', widget: (_) => WarehouseView()),
+          ]),
+        ],
+      ),
     );
   }
 }
